@@ -56,10 +56,9 @@ namespace 邮件群发
             return DB.Context.Insert(data);
         }
 
-        public List<MailFrom> GetMailFromList(int pageSize, int pageIndex)
+        public List<MailFrom> GetMailFromList()
         {
             return DB.Context.From<MailFrom>()
-                .Page(pageSize, pageIndex)
                 .ToList();
         }
     }
