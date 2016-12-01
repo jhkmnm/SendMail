@@ -17,6 +17,7 @@ namespace 邮件群发
         string[] fromColumns = { "服务器", "端口", "用户名", "密码", "发件箱" };
         DAL dal = new DAL();
         ExcelHelper excel;
+        int threadCount = 10;
 
         public FormMail()
         {
@@ -130,12 +131,20 @@ namespace 邮件群发
 
         private void button1_Click(object sender, EventArgs e)
         {
+            List<MailTo> mailto = new List<MailTo>();
+            for(int i=0;i<100000;i++)
+            {
+                mailto.Add(new MailTo { Mail = "mail" + i.ToString() });
+            }
+
+            dal.AddMailTo(mailto);
+
             GetSendList();
         }
 
         private int GetAvg(int total, int count)
         {
-            return total / count;
+            return (int)Math.Ceiling(total / (count * 1.0));
         }        
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -147,12 +156,13 @@ namespace 邮件群发
 
             data.ForEach(item =>
             {
-                MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount);
-
-                mail.SendResult += mail_SendResult;
-
-                Thread th = new Thread(mail.Send);
-                th.Start();
+                if (item.ToCount > 0)
+                {
+                    MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount);
+                    mail.SendResult += mail_SendResult;
+                    Thread th = new Thread(mail.Send);
+                    th.Start();
+                }
             });
         }
 
@@ -176,6 +186,17 @@ namespace 邮件群发
                 if(!e.Succeed)
                     row.Cells[colMessage.Name].Value = string.Format("{0}{1}{2}", row.Cells[colMessage.Name].Value, Environment.NewLine, e.Message);
             }));
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            List<MailFrom> mailto = new List<MailFrom>();
+            for (int i = 0; i < 100; i++)
+            {
+                mailto.Add(new MailFrom { Server = "smtp.daum.net", Port = 465, UserName = "username", PassWord = "password", Mail = "mail" + i.ToString() });
+            }
+
+            dal.AddMailFrom(mailto);
         }
     }
 

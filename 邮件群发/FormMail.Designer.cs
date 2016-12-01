@@ -33,20 +33,21 @@
             this.btnImportFrom = new System.Windows.Forms.Button();
             this.btnImportTo = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.colSendMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMessage = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.colToCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.txtMaxToCount = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.btnAddImg = new System.Windows.Forms.Button();
             this.lblImg = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.sendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.colSendMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colMessage = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.colToCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sendDataBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -97,6 +98,43 @@
             this.dataGridView1.Size = new System.Drawing.Size(622, 607);
             this.dataGridView1.TabIndex = 4;
             // 
+            // colSendMail
+            // 
+            this.colSendMail.DataPropertyName = "SendMail";
+            this.colSendMail.HeaderText = "发件箱";
+            this.colSendMail.Name = "colSendMail";
+            this.colSendMail.ReadOnly = true;
+            this.colSendMail.Width = 150;
+            // 
+            // colPress
+            // 
+            this.colPress.DataPropertyName = "Press";
+            this.colPress.HeaderText = "进度";
+            this.colPress.Name = "colPress";
+            this.colPress.ReadOnly = true;
+            this.colPress.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colPress.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // colMessage
+            // 
+            this.colMessage.DataPropertyName = "Message";
+            this.colMessage.HeaderText = "消息";
+            this.colMessage.Name = "colMessage";
+            this.colMessage.ReadOnly = true;
+            this.colMessage.Width = 300;
+            // 
+            // colToCount
+            // 
+            this.colToCount.DataPropertyName = "ToCount";
+            this.colToCount.HeaderText = "ToCount";
+            this.colToCount.Name = "colToCount";
+            this.colToCount.ReadOnly = true;
+            this.colToCount.Visible = false;
+            // 
+            // sendDataBindingSource
+            // 
+            this.sendDataBindingSource.DataSource = typeof(邮件群发.SendData);
+            // 
             // txtMaxToCount
             // 
             this.txtMaxToCount.Location = new System.Drawing.Point(91, 10);
@@ -143,7 +181,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(587, 10);
+            this.button1.Location = new System.Drawing.Point(662, 452);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 10;
@@ -151,48 +189,22 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // sendDataBindingSource
+            // button2
             // 
-            this.sendDataBindingSource.DataSource = typeof(邮件群发.SendData);
-            // 
-            // colSendMail
-            // 
-            this.colSendMail.DataPropertyName = "SendMail";
-            this.colSendMail.HeaderText = "发件箱";
-            this.colSendMail.Name = "colSendMail";
-            this.colSendMail.ReadOnly = true;
-            this.colSendMail.Width = 150;
-            // 
-            // colPress
-            // 
-            this.colPress.DataPropertyName = "Press";
-            this.colPress.HeaderText = "进度";
-            this.colPress.Name = "colPress";
-            this.colPress.ReadOnly = true;
-            this.colPress.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colPress.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colMessage
-            // 
-            this.colMessage.DataPropertyName = "Message";
-            this.colMessage.HeaderText = "消息";
-            this.colMessage.Name = "colMessage";
-            this.colMessage.ReadOnly = true;
-            this.colMessage.Width = 300;
-            // 
-            // colToCount
-            // 
-            this.colToCount.DataPropertyName = "ToCount";
-            this.colToCount.HeaderText = "ToCount";
-            this.colToCount.Name = "colToCount";
-            this.colToCount.ReadOnly = true;
-            this.colToCount.Visible = false;
+            this.button2.Location = new System.Drawing.Point(764, 452);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 11;
+            this.button2.Text = "发送邮件";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // FormMail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(956, 651);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblImg);
@@ -206,8 +218,8 @@
             this.Name = "FormMail";
             this.Text = "发送邮件";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sendDataBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -229,5 +241,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colPress;
         private System.Windows.Forms.DataGridViewLinkColumn colMessage;
         private System.Windows.Forms.DataGridViewTextBoxColumn colToCount;
+        private System.Windows.Forms.Button button2;
     }
 }
