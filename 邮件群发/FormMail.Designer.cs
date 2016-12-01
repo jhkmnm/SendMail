@@ -38,11 +38,12 @@
             this.btnAddImg = new System.Windows.Forms.Button();
             this.lblImg = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.sendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.sendMailDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.toCountDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.sendIndexDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button1 = new System.Windows.Forms.Button();
+            this.sendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.colSendMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMessage = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.colToCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sendDataBindingSource)).BeginInit();
@@ -84,9 +85,10 @@
             this.dataGridView1.AutoGenerateColumns = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.sendMailDataGridViewTextBoxColumn,
-            this.toCountDataGridViewTextBoxColumn,
-            this.sendIndexDataGridViewTextBoxColumn});
+            this.colSendMail,
+            this.colPress,
+            this.colMessage,
+            this.colToCount});
             this.dataGridView1.DataSource = this.sendDataBindingSource;
             this.dataGridView1.Location = new System.Drawing.Point(4, 39);
             this.dataGridView1.Name = "dataGridView1";
@@ -110,6 +112,7 @@
             this.btnSend.TabIndex = 6;
             this.btnSend.Text = "发送邮件";
             this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // btnAddImg
             // 
@@ -138,31 +141,6 @@
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
             // 
-            // sendDataBindingSource
-            // 
-            this.sendDataBindingSource.DataSource = typeof(邮件群发.SendData);
-            // 
-            // sendMailDataGridViewTextBoxColumn
-            // 
-            this.sendMailDataGridViewTextBoxColumn.DataPropertyName = "SendMail";
-            this.sendMailDataGridViewTextBoxColumn.HeaderText = "发件箱";
-            this.sendMailDataGridViewTextBoxColumn.Name = "sendMailDataGridViewTextBoxColumn";
-            this.sendMailDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // toCountDataGridViewTextBoxColumn
-            // 
-            this.toCountDataGridViewTextBoxColumn.DataPropertyName = "ToCount";
-            this.toCountDataGridViewTextBoxColumn.HeaderText = "ToCount";
-            this.toCountDataGridViewTextBoxColumn.Name = "toCountDataGridViewTextBoxColumn";
-            this.toCountDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // sendIndexDataGridViewTextBoxColumn
-            // 
-            this.sendIndexDataGridViewTextBoxColumn.DataPropertyName = "SendIndex";
-            this.sendIndexDataGridViewTextBoxColumn.HeaderText = "SendIndex";
-            this.sendIndexDataGridViewTextBoxColumn.Name = "sendIndexDataGridViewTextBoxColumn";
-            this.sendIndexDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(587, 10);
@@ -172,6 +150,43 @@
             this.button1.Text = "发送邮件";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // sendDataBindingSource
+            // 
+            this.sendDataBindingSource.DataSource = typeof(邮件群发.SendData);
+            // 
+            // colSendMail
+            // 
+            this.colSendMail.DataPropertyName = "SendMail";
+            this.colSendMail.HeaderText = "发件箱";
+            this.colSendMail.Name = "colSendMail";
+            this.colSendMail.ReadOnly = true;
+            this.colSendMail.Width = 150;
+            // 
+            // colPress
+            // 
+            this.colPress.DataPropertyName = "Press";
+            this.colPress.HeaderText = "进度";
+            this.colPress.Name = "colPress";
+            this.colPress.ReadOnly = true;
+            this.colPress.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colPress.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // colMessage
+            // 
+            this.colMessage.DataPropertyName = "Message";
+            this.colMessage.HeaderText = "消息";
+            this.colMessage.Name = "colMessage";
+            this.colMessage.ReadOnly = true;
+            this.colMessage.Width = 300;
+            // 
+            // colToCount
+            // 
+            this.colToCount.DataPropertyName = "ToCount";
+            this.colToCount.HeaderText = "ToCount";
+            this.colToCount.Name = "colToCount";
+            this.colToCount.ReadOnly = true;
+            this.colToCount.Visible = false;
             // 
             // FormMail
             // 
@@ -208,10 +223,11 @@
         private System.Windows.Forms.Button btnAddImg;
         private System.Windows.Forms.Label lblImg;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn sendMailDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn toCountDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn sendIndexDataGridViewTextBoxColumn;
         private System.Windows.Forms.BindingSource sendDataBindingSource;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSendMail;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPress;
+        private System.Windows.Forms.DataGridViewLinkColumn colMessage;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colToCount;
     }
 }

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using Utilities;
-using Utilities.ExcelHelper;
 
 namespace 邮件群发
 {
@@ -15,6 +16,7 @@ namespace 邮件群发
     {
         string[] fromColumns = { "服务器", "端口", "用户名", "密码", "发件箱" };
         DAL dal = new DAL();
+        ExcelHelper excel;
 
         public FormMail()
         {
@@ -23,64 +25,77 @@ namespace 邮件群发
 
         private void btnImportFrom_Click(object sender, EventArgs e)
         {
-            var data = ExcelHelper.GetExcelFile();
+            if (excel == null)
+                excel = ExcelHelper.GetInstance();
+
+            var error = new List<ErrorVO>();
+            var imports = excel.Import("SendMan", ref error);
             DataVerifier dv = new DataVerifier();
-            for(int i=0;i<fromColumns.Length;i++)
+
+            if(error.Count > 0)
             {
-                dv.Check(data.Columns.Contains(fromColumns[i]), "请按模板进行导入");
-                if (!dv.Pass)
-                    break;
+                new FormError(error).ShowDialog();
             }
 
-            if(dv.Pass)
+            if (imports.Count > 0)
             {
                 List<MailFrom> fromList = new List<MailFrom>();
-                foreach(DataRow row in data.Rows)
-                {
-                    var server = row["服务器"].ToString();
-                    var port = row["端口"].ToString().ToInt32();
-                    var username = row["用户名"].ToString();
-                    var password = row["密码"].ToString();
-                    var mail = row["发件箱"].ToString();
+                imports.ForEach(item => {
+                    var server = item["服务器"].ColumnVaue;
+                    var port = item["端口"].ColumnVaue.ToInt32();
+                    var username = item["用户名"].ColumnVaue;
+                    var password = item["密码"].ColumnVaue;
+                    var mail = item["发件箱"].ColumnVaue;
 
                     fromList.Add(new MailFrom { Server = server, Port = port, UserName = username, PassWord = password, Mail = mail });
-                }
-
+                });
+                
                 dv.Check(dal.AddMailFrom(fromList) == 0, "导入失败");
             }
 
             dv.ShowMsgIfFailed();
+
+            GetSendList();
         }
 
         private void btnImportTo_Click(object sender, EventArgs e)
         {
-            var data = ExcelHelper.GetExcelFile();
-            DataVerifier dv = new DataVerifier();
-            dv.Check(data.Columns.Contains("收件人"), "请按模板进行导入");
+            if (excel == null)
+                excel = ExcelHelper.GetInstance();
 
-            if (dv.Pass)
+            var error = new List<ErrorVO>();
+            var imports = excel.Import("ToMan", ref error);            
+            DataVerifier dv = new DataVerifier();
+            if (error.Count > 0)
+            {
+                new FormError(error).ShowDialog();
+            }
+
+            if (imports.Count > 0)
             {
                 List<MailTo> toList = new List<MailTo>();
-                foreach (DataRow row in data.Rows)
+                imports.ForEach(item =>
                 {
-                    var mail = row["收件人"].ToString();
+                    var mail = item["收件人"].ColumnVaue;
 
                     toList.Add(new MailTo { Mail = mail });
 
-                    if(toList.Count >= 1000)
+                    if (toList.Count >= 1000)
                     {
                         dv.Check(dal.AddMailTo(toList) == 0, "导入失败");
                         toList.Clear();
                         if (!dv.Pass)
-                            break;
+                            return;
                     }
-                }
+                });
 
-                if(toList.Count > 0)
+                if (toList.Count > 0)
                     dv.Check(dal.AddMailTo(toList) == 0, "导入失败");
-            }
+            }            
 
             dv.ShowMsgIfFailed();
+
+            GetSendList();
         }
 
         private void btnAddImg_Click(object sender, EventArgs e)
@@ -96,24 +111,82 @@ namespace 邮件群发
         {
             var from = dal.GetMailFromList();
             var tocount = dal.MailToCount();
+            var fromcount = from.Count;
 
             List<SendData> data = new List<SendData>();
-            from.ForEach(a => data.Add(new SendData { From = a, ToCount = tocount, SendMail = a.Mail }));
-
-            sendDataBindingSource.DataSource = data;
+            from.ForEach(a => {
+                var count = GetAvg(tocount, fromcount);
+                data.Add(new SendData { 
+                    From = a, 
+                    ToCount = count, 
+                    SendMail = a.Mail, 
+                    Press = string.Format("{0}/{1}", 0, count) });
+                tocount = tocount - count;
+                fromcount = fromcount - 1;
+            });
+            
+            dataGridView1.DataSource = data;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             GetSendList();
         }
+
+        private int GetAvg(int total, int count)
+        {
+            return total / count;
+        }        
+
+        private void btnSend_Click(object sender, EventArgs e)
+        {
+            string subject = "";
+            int tocount = 3;
+
+            var data = (List<SendData>)dataGridView1.DataSource;
+
+            data.ForEach(item =>
+            {
+                MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount);
+
+                mail.SendResult += mail_SendResult;
+
+                Thread th = new Thread(mail.Send);
+                th.Start();
+            });
+        }
+
+        void mail_SendResult(object sender, SendResultEventArgs e)
+        {
+            this.Invoke(new Action(() => {
+                DataGridViewRow row = null;
+                foreach (DataGridViewRow r in dataGridView1.Rows)
+                {
+                    if (r.Cells[colSendMail.Name].Value.ToString() == e.Mail)
+                    {
+                        row = r;
+                        break;
+                    }
+                }
+
+                if (row == null)
+                    return;
+
+                row.Cells[colPress.Name].Value = string.Format("{0}/{1}", e.Count, row.Cells[colToCount.Name].Value);
+                if(!e.Succeed)
+                    row.Cells[colMessage.Name].Value = string.Format("{0}{1}{2}", row.Cells[colMessage.Name].Value, Environment.NewLine, e.Message);
+            }));
+        }
     }
 
-    partial class SendData
+    public class SendData
     {
         public string SendMail { get; set; }
         public int ToCount { get; set; }
-        public int SendIndex { get; set; }
         public MailFrom From { get; set; }
+        //public int Index { get; set; }
+        public string Message { get; set; }
+
+        public string Press { get; set; }
     }
 }

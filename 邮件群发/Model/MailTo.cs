@@ -11,8 +11,22 @@ namespace 邮件群发
 	public partial class MailTo : Entity
 	{
 		#region Model
+		private int _ID;
 		private string _Mail;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		[Field("ID")]
+		public int ID
+		{
+			get { return _ID; }
+			set
+			{
+				this.OnPropertyValueChange("ID");
+				this._ID = value;
+			}
+		}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -35,7 +49,15 @@ namespace 邮件群发
 		public override Field[] GetPrimaryKeyFields()
 		{
 			return new Field[] {
+				_.ID,
 			};
+		}
+		/// <summary>
+		/// 获取实体中的标识列
+		/// </summary>
+		public override Field GetIdentityField()
+		{
+			return _.ID;
 		}
 		/// <summary>
 		/// 获取列信息
@@ -43,6 +65,7 @@ namespace 邮件群发
 		public override Field[] GetFields()
 		{
 			return new Field[] {
+				_.ID,
 				_.Mail,
 			};
 		}
@@ -52,6 +75,7 @@ namespace 邮件群发
 		public override object[] GetValues()
 		{
 			return new object[] {
+				this._ID,
 				this._Mail,
 			};
 		}
@@ -75,6 +99,10 @@ namespace 邮件群发
 			/// * 
 			/// </summary>
 			public readonly static Field All = new Field("*", "MailTo");
+			/// <summary>
+			/// 
+			/// </summary>
+			public readonly static Field ID = new Field("ID", "MailTo", "");
 			/// <summary>
 			/// 
 			/// </summary>
