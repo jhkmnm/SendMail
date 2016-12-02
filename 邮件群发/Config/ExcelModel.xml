@@ -5,9 +5,9 @@
     <DataColumn ColumnName="端口" RegStr="^[1-9]*[1-9][0-9]*$" MaxLength="5" ErrorInfo="请输入正整数" IsNull="false"/>
     <DataColumn ColumnName="用户名" RegStr="" MaxLength="255" ErrorInfo="不允许为空" IsNull="false"/>
     <DataColumn ColumnName="密码" RegStr="" MaxLength="255" ErrorInfo="不允许为空" IsNull="false"/>
-    <DataColumn ColumnName="发件箱" RegStr="^[0-9]*[1-9][0-9]*$" MaxLength="255" ErrorInfo="请输入正确的邮箱地址" IsNull="false"/>    
+    <DataColumn ColumnName="发件箱" RegStr="^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$" MaxLength="255" ErrorInfo="请输入正确的邮箱地址" IsNull="false"/>    
   </ViewDataDetail>
   <ViewDataDetail FileName="收件人导入_{0:yyyyMMddHHmmss}" DataKey="ToMan">    
-    <DataColumn ColumnName="收件人" RegStr="^[0-9]*[1-9][0-9]*$" MaxLength="255" ErrorInfo="请输入正确的邮箱地址" IsNull="false"/>
+    <DataColumn ColumnName="收件人" RegStr="^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$" MaxLength="255" ErrorInfo="请输入正确的邮箱地址" IsNull="false"/>
   </ViewDataDetail>
 </ViewDataDetails>

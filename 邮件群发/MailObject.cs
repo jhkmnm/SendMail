@@ -30,7 +30,7 @@ namespace 邮件群发
         /// <param name="from">发件人</param>
         /// <param name="maxTocount">最大收件人数量</param>
         /// <param name="maxTocount">最大发送数量</param>
-        public MailObject(string server, int port, string userName, string passWord, string subject, string from, int maxToCount, int maxSendCount)
+        public MailObject(string server, int port, string userName, string passWord, string subject, string from, int maxToCount, int maxSendCount, string imgPath)
         {
             this.maxToCount = maxToCount;
             client.Connect(server, port, SslSecurityMode.Implicit);
@@ -39,23 +39,24 @@ namespace 邮件群发
             this.passWord = passWord;
             this.maxSendCount = maxSendCount;
             mail.From = from;
+            mail.Attachments.Add(imgPath);
         }
 
         public void Send()
         {
             string to = GetRecipientAddresses();            
 
-            while(!string.IsNullOrEmpty(to) && (maxSendCount - result.Count) >= 0)
+            while(!string.IsNullOrEmpty(to))
             {
                 mail.To = to;
                 result.Mail = mail.From.ToString();
 
                 try
                 {
-                    //if (!client.IsAuthenticated)
-                    //    client.Authenticate(userName, passWord);
-                    //client.Send(mail);
-                    System.Threading.Thread.Sleep(500);
+                    if (!client.IsAuthenticated)
+                        client.Authenticate(userName, passWord);
+                    client.Send(mail);
+                    //System.Threading.Thread.Sleep(500);
                     result.Succeed = true;
                     result.Message = "";
                 }
@@ -69,10 +70,14 @@ namespace 邮件群发
                 {
                     index++;
                     OnSend(result);
-                    to = GetRecipientAddresses();
+                    to = "";
+                    if(maxSendCount - result.Count > 0)
+                        to = GetRecipientAddresses();
                 }
             }
-            
+            result.Succeed = true;
+            result.Message = "完成";
+            OnSend(result);
             //client.Disconnect();
         }
 
@@ -91,6 +96,8 @@ namespace 邮件群发
         /// <returns></returns>
         public string GetRecipientAddresses()
         {
+            maxToCount = (maxSendCount - index * maxToCount) > 0 ? maxToCount : (maxSendCount - (index - 1) * maxToCount);
+
             var to = dal.GetMailToList(maxToCount, index);
             result.Count += to.Count;
             return string.Join(";", to.Select(a => a.Mail).ToArray());
