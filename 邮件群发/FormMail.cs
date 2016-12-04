@@ -118,6 +118,7 @@ namespace 邮件群发
             if(file.ShowDialog() == DialogResult.OK)
             {
                 lblImg.Text = file.FileName;
+                pictureBox1.ImageLocation = file.FileName;
             }
         }
 
@@ -142,19 +143,6 @@ namespace 邮件群发
             dataGridView1.DataSource = data;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            List<MailTo> mailto = new List<MailTo>();
-            for(int i=0;i<100000;i++)
-            {
-                mailto.Add(new MailTo { Mail = "mail" + i.ToString() });
-            }
-
-            dal.AddMailTo(mailto);
-
-            GetSendList();
-        }
-
         private int GetAvg(int total, int count)
         {
             return (int)Math.Ceiling(total / (count * 1.0));
@@ -162,25 +150,39 @@ namespace 邮件群发
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            string subject = "";
+            string subject = txtSubject.Text;
             int tocount = txtMaxToCount.Text.ToInt32(100);    //单次发送数量
-            threadCount = 10;
+            threadCount = txtThread.Text.ToInt32(10);
 
-            var data = (List<SendData>)dataGridView1.DataSource;
+            DataVerifier dv = new DataVerifier();
+            dv.Check(string.IsNullOrWhiteSpace(lblImg.Text), "请上传图片");
+            if (dv.Pass)
+            {
+                var data = (List<SendData>)dataGridView1.DataSource;
 
-            thm = new ThreadManage(threadCount, mail_SendResult, subject, tocount, lblImg.Text);
+                dv.Check(data.Count == 0, "请先导入发件人");
+                dv.CheckIfBeforePass(!data.Any(a => a.ToCount > 0), "请先导入收件人");
 
-            thm.AddData(data.Where(a => a.ToCount > 0).ToList());
-            btnSend.Enabled = false;
-            
-            thm.Start();
-            btnSend.Text = "开始发送";
+                if (dv.Pass)
+                {
+                    thm = new ThreadManage(threadCount, mail_SendResult, subject, tocount, lblImg.Text);
+
+                    thm.AddData(data.Where(a => a.ToCount > 0).ToList());
+                    btnSend.Enabled = false;
+
+                    thm.Start();
+                    btnSend.Text = "开始发送";
+                }
+            }
+            dv.ShowMsgIfFailed();
         }
 
         void mail_SendResult(object sender, SendResultEventArgs e)
         {
             if (e.Message == "完成")
-                thm.CallBackThread();
+            {
+                thm.CallBackThread();                
+            }
 
             this.Invoke(new Action(() =>
             {
@@ -199,22 +201,33 @@ namespace 邮件群发
 
                 row.Cells[colPress.Name].Value = string.Format("{0}/{1}", e.Count, row.Cells[colToCount.Name].Value);
                 row.Cells[colMessage.Name].Value = string.Format("{0}{1}{2}", row.Cells[colMessage.Name].Value, Environment.NewLine, e.Message);
+
+                if (e.Message == "完成" && thm.num == 0)
+                {
+                    btnSend.Enabled = true;
+                    btnSend.Text = "发送邮件";
+                }
             }));
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if(dataGridView1.Columns[e.ColumnIndex] == colMessage)
+            {
+                var msg = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                new FormMessage(msg).ShowDialog();
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            List<MailFrom> mailto = new List<MailFrom>();
-            for (int i = 0; i < 100; i++)
-            {
-                mailto.Add(new MailFrom { Server = "smtp.daum.net", Port = 465, UserName = "username", PassWord = "password", Mail = "mail" + i.ToString() });
-            }
-
-            dal.AddMailFrom(mailto);
+            dal.DelMailFromAll();
+            GetSendList();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
+            dal.DelMailToAll();
             GetSendList();
         }
     }
@@ -244,7 +257,7 @@ namespace 邮件群发
     {
         List<ThreadInfo> thList = new List<ThreadInfo>();
         int maxNum = 0;
-        int num = 0;
+        public int num = 0;
         static object obj = new object();
         private Queue<SendData> SendQueue = new Queue<SendData>();
         EventHandler<SendResultEventArgs> mail_SendResult;

@@ -44,6 +44,11 @@ namespace 邮件群发
         {
             return DB.Context.From<MailTo>().Count();
         }
+
+        public int DelMailToAll()
+        {
+            return DB.Context.DeleteAll<MailTo>();
+        }
         #endregion
 
         public int AddMailFrom(MailFrom data)
@@ -52,8 +57,13 @@ namespace 邮件群发
         }
 
         public int AddMailFrom(List<MailFrom> data)
-        {
+        {            
             return DB.Context.Insert(data);
+        }
+
+        public int DelMailFromAll()
+        {
+            return DB.Context.DeleteAll<MailFrom>();
         }
 
         public List<MailFrom> GetMailFromList()

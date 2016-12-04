@@ -4,6 +4,8 @@ using System.Text;
 using ComponentPro.Net;
 using ComponentPro.Net.Mail;
 using System.Linq;
+using System.Drawing;
+using System.IO;
 
 namespace 邮件群发
 {
@@ -14,7 +16,8 @@ namespace 邮件群发
         int maxToCount = 0;
         int index = 1;
         int maxSendCount = 0;
-        string userName, passWord;
+        string userName, passWord, server, from, imgPath, subject;
+        int port;
         DAL dal = new DAL();
         public event EventHandler<SendResultEventArgs> SendResult;
         SendResultEventArgs result = new SendResultEventArgs();
@@ -33,30 +36,66 @@ namespace 邮件群发
         public MailObject(string server, int port, string userName, string passWord, string subject, string from, int maxToCount, int maxSendCount, string imgPath)
         {
             this.maxToCount = maxToCount;
-            client.Connect(server, port, SslSecurityMode.Implicit);
-            mail.Subject = subject;
             this.userName = userName;
             this.passWord = passWord;
             this.maxSendCount = maxSendCount;
+            this.server = server;
+            this.port = port;
+            this.from = from;
+            this.imgPath = imgPath;
+            this.subject = subject;                       
+        }
+
+        private void Init()
+        {
+            result.Mail = from;
+            result.Succeed = true;
+            result.Message = "初始化账号信息...";
+            OnSend(result);
+                        
+            client.Connect(server, port, SslSecurityMode.Implicit);
+            client.Authenticate(userName, passWord);
+            mail.Subject = subject;
             mail.From = from;
+            mail.BodyHtml = Img(imgPath);
             mail.Attachments.Add(imgPath);
+
+            result.Succeed = true;
+            result.Message = "初始化账号信息成功";
+            OnSend(result);
+        }
+
+        private string Img(string imgfile)
+        {
+            Bitmap bmp = new Bitmap(imgfile);
+
+            MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            byte[] arr = new byte[ms.Length];
+            ms.Position = 0;
+            ms.Read(arr, 0, (int)ms.Length);
+            ms.Close();
+
+            string html = "<BODY style = \"MARGIN: 10px\"><DIV><IMG src=\"data:image/png;base64,{0}\"></IMG></DIV></BODY>";
+
+            return string.Format(html, Convert.ToBase64String(arr));
         }
 
         public void Send()
         {
-            string to = GetRecipientAddresses();            
+            string to = GetRecipientAddresses();
 
             while(!string.IsNullOrEmpty(to))
             {
                 mail.To = to;
-                result.Mail = mail.From.ToString();
 
                 try
                 {
                     if (!client.IsAuthenticated)
-                        client.Authenticate(userName, passWord);
+                    {
+                        Init();                        
+                    }
                     client.Send(mail);
-                    //System.Threading.Thread.Sleep(500);
                     result.Succeed = true;
                     result.Message = "";
                 }
