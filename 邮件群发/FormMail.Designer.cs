@@ -52,6 +52,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -60,7 +61,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(639, 173);
+            this.label1.Location = new System.Drawing.Point(639, 172);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 12);
             this.label1.TabIndex = 1;
@@ -68,7 +69,7 @@
             // 
             // btnImportFrom
             // 
-            this.btnImportFrom.Location = new System.Drawing.Point(653, 96);
+            this.btnImportFrom.Location = new System.Drawing.Point(653, 106);
             this.btnImportFrom.Name = "btnImportFrom";
             this.btnImportFrom.Size = new System.Drawing.Size(75, 23);
             this.btnImportFrom.TabIndex = 2;
@@ -78,7 +79,7 @@
             // 
             // btnImportTo
             // 
-            this.btnImportTo.Location = new System.Drawing.Point(750, 96);
+            this.btnImportTo.Location = new System.Drawing.Point(750, 106);
             this.btnImportTo.Name = "btnImportTo";
             this.btnImportTo.Size = new System.Drawing.Size(75, 23);
             this.btnImportTo.TabIndex = 3;
@@ -145,7 +146,7 @@
             // 
             // txtMaxToCount
             // 
-            this.txtMaxToCount.Location = new System.Drawing.Point(716, 170);
+            this.txtMaxToCount.Location = new System.Drawing.Point(716, 169);
             this.txtMaxToCount.Name = "txtMaxToCount";
             this.txtMaxToCount.Size = new System.Drawing.Size(100, 21);
             this.txtMaxToCount.TabIndex = 5;
@@ -153,7 +154,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(847, 95);
+            this.btnSend.Location = new System.Drawing.Point(847, 105);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 6;
@@ -190,7 +191,7 @@
             // 
             // txtSubject
             // 
-            this.txtSubject.Location = new System.Drawing.Point(716, 209);
+            this.txtSubject.Location = new System.Drawing.Point(716, 198);
             this.txtSubject.Name = "txtSubject";
             this.txtSubject.Size = new System.Drawing.Size(216, 21);
             this.txtSubject.TabIndex = 14;
@@ -198,7 +199,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(651, 212);
+            this.label2.Location = new System.Drawing.Point(651, 201);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 12);
             this.label2.TabIndex = 13;
@@ -206,7 +207,7 @@
             // 
             // txtThread
             // 
-            this.txtThread.Location = new System.Drawing.Point(716, 132);
+            this.txtThread.Location = new System.Drawing.Point(716, 139);
             this.txtThread.Name = "txtThread";
             this.txtThread.Size = new System.Drawing.Size(100, 21);
             this.txtThread.TabIndex = 16;
@@ -215,7 +216,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(651, 135);
+            this.label3.Location = new System.Drawing.Point(651, 142);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(59, 12);
             this.label3.TabIndex = 15;
@@ -224,7 +225,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(827, 136);
+            this.label4.Location = new System.Drawing.Point(827, 141);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(77, 12);
             this.label4.TabIndex = 17;
@@ -234,7 +235,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(651, 57);
+            this.label5.Location = new System.Drawing.Point(651, 52);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(257, 12);
             this.label5.TabIndex = 18;
@@ -264,17 +265,27 @@
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(651, 77);
+            this.label6.Location = new System.Drawing.Point(651, 72);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(257, 12);
             this.label6.TabIndex = 21;
             this.label6.Text = "发送服务器地址和端口可以在邮箱的设置中查找";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.Red;
+            this.label7.Location = new System.Drawing.Point(651, 86);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(0, 12);
+            this.label7.TabIndex = 22;
             // 
             // FormMail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(956, 651);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button2);
@@ -327,5 +338,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
     }
 }
