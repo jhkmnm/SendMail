@@ -33,10 +33,6 @@
             this.btnImportFrom = new System.Windows.Forms.Button();
             this.btnImportTo = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.colSendMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colMessage = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.colToCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.sendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.txtMaxToCount = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
@@ -53,6 +49,10 @@
             this.button2 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.colSendMail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMessage = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.colToCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -106,39 +106,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(622, 642);
             this.dataGridView1.TabIndex = 4;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // colSendMail
-            // 
-            this.colSendMail.DataPropertyName = "SendMail";
-            this.colSendMail.HeaderText = "发件箱";
-            this.colSendMail.Name = "colSendMail";
-            this.colSendMail.ReadOnly = true;
-            this.colSendMail.Width = 150;
-            // 
-            // colPress
-            // 
-            this.colPress.DataPropertyName = "Press";
-            this.colPress.HeaderText = "进度";
-            this.colPress.Name = "colPress";
-            this.colPress.ReadOnly = true;
-            this.colPress.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colPress.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // colMessage
-            // 
-            this.colMessage.DataPropertyName = "Message";
-            this.colMessage.HeaderText = "消息";
-            this.colMessage.Name = "colMessage";
-            this.colMessage.ReadOnly = true;
-            this.colMessage.Width = 300;
-            // 
-            // colToCount
-            // 
-            this.colToCount.DataPropertyName = "ToCount";
-            this.colToCount.HeaderText = "ToCount";
-            this.colToCount.Name = "colToCount";
-            this.colToCount.ReadOnly = true;
-            this.colToCount.Visible = false;
             // 
             // sendDataBindingSource
             // 
@@ -280,6 +247,40 @@
             this.label7.Size = new System.Drawing.Size(0, 12);
             this.label7.TabIndex = 22;
             // 
+            // colSendMail
+            // 
+            this.colSendMail.DataPropertyName = "SendMail";
+            this.colSendMail.HeaderText = "发件箱";
+            this.colSendMail.Name = "colSendMail";
+            this.colSendMail.ReadOnly = true;
+            this.colSendMail.Width = 150;
+            // 
+            // colPress
+            // 
+            this.colPress.DataPropertyName = "Press";
+            this.colPress.HeaderText = "进度(已发/总数)";
+            this.colPress.Name = "colPress";
+            this.colPress.ReadOnly = true;
+            this.colPress.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colPress.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colPress.Width = 120;
+            // 
+            // colMessage
+            // 
+            this.colMessage.DataPropertyName = "Message";
+            this.colMessage.HeaderText = "消息";
+            this.colMessage.Name = "colMessage";
+            this.colMessage.ReadOnly = true;
+            this.colMessage.Width = 300;
+            // 
+            // colToCount
+            // 
+            this.colToCount.DataPropertyName = "ToCount";
+            this.colToCount.HeaderText = "ToCount";
+            this.colToCount.Name = "colToCount";
+            this.colToCount.ReadOnly = true;
+            this.colToCount.Visible = false;
+            // 
             // FormMail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -325,10 +326,6 @@
         private System.Windows.Forms.Label lblImg;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.BindingSource sendDataBindingSource;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSendMail;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPress;
-        private System.Windows.Forms.DataGridViewLinkColumn colMessage;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colToCount;
         private System.Windows.Forms.TextBox txtSubject;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtThread;
@@ -339,5 +336,9 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSendMail;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPress;
+        private System.Windows.Forms.DataGridViewLinkColumn colMessage;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colToCount;
     }
 }

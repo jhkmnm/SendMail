@@ -15,8 +15,9 @@ namespace 邮件群发
         MailMessage mail = new MailMessage();
         int maxToCount = 0;
         int index = 1;
+        int startID = 1;
         int maxSendCount = 0;
-        string userName, passWord, server, from, imgPath, subject;
+        string userName, passWord, server;
         int port;
         DAL dal = new DAL();
         public event EventHandler<SendResultEventArgs> SendResult;
@@ -33,7 +34,7 @@ namespace 邮件群发
         /// <param name="from">发件人</param>
         /// <param name="maxTocount">最大收件人数量</param>
         /// <param name="maxTocount">最大发送数量</param>
-        public MailObject(string server, int port, string userName, string passWord, string subject, string from, int maxToCount, int maxSendCount, string imgPath)
+        public MailObject(string server, int port, string userName, string passWord, string subject, string from, int maxToCount, int maxSendCount, string imgPath, int startId)
         {
             this.maxToCount = maxToCount;
             this.userName = userName;
@@ -41,28 +42,23 @@ namespace 邮件群发
             this.maxSendCount = maxSendCount;
             this.server = server;
             this.port = port;
-            this.from = from;
-            this.imgPath = imgPath;
-            this.subject = subject;                       
-        }
-
-        private void Init()
-        {
             result.Mail = from;
-            result.Succeed = true;
-            result.Message = "初始化账号信息...";
-            OnSend(result);
-                        
-            client.Connect(server, port, SslSecurityMode.Implicit);
-            client.Authenticate(userName, passWord);
+            this.startID = startId;
+
             mail.Subject = subject;
             mail.From = from;
             mail.BodyHtml = Img(imgPath);
             mail.Attachments.Add(imgPath);
+        }
 
+        private void Init()
+        {            
             result.Succeed = true;
-            result.Message = "初始化账号信息成功";
+            result.Message = string.Format("{1}:第{0}组发送中...", index, DateTime.Now.ToString());
             OnSend(result);
+                        
+            client.Connect(server, port, SslSecurityMode.Implicit);
+            client.Authenticate(userName, passWord);            
         }
 
         private string Img(string imgfile)
@@ -91,22 +87,19 @@ namespace 邮件群发
 
                 try
                 {
-                    if (!client.IsAuthenticated)
-                    {
-                        Init();                        
-                    }
+                    Init();
                     client.Send(mail);
                     result.Succeed = true;
-                    result.Message = "";
+                    result.Message = string.Format("{2}:第{0}组发送成功{1}", index, Environment.NewLine, DateTime.Now.ToString());
                 }
                 catch(Exception ex)
                 {
                     result.Succeed = false;
-                    result.Message = ex.Message;
-                    //client.Disconnect();
+                    result.Message = string.Format("{3}:第{0}组发送失败:{1}{2}", index, ex.Message, Environment.NewLine, DateTime.Now.ToString());
                 }
                 finally
                 {
+                    client.Disconnect();
                     index++;
                     OnSend(result);
                     to = "";
@@ -115,9 +108,8 @@ namespace 邮件群发
                 }
             }
             result.Succeed = true;
-            result.Message = "完成";
+            result.Message = "全部发送完成";
             OnSend(result);
-            //client.Disconnect();
         }
 
         protected virtual void OnSend(SendResultEventArgs e)
@@ -135,12 +127,12 @@ namespace 邮件群发
         /// <returns></returns>
         public string GetRecipientAddresses()
         {
-            maxToCount = (maxSendCount - index * maxToCount) > 0 ? maxToCount : (maxSendCount - (index - 1) * maxToCount);
+            var count = (maxSendCount - index * maxToCount) > 0 ? maxToCount : (maxSendCount - (index - 1) * maxToCount);
 
-            var to = dal.GetMailToList(maxToCount, index);
+            var to = dal.GetMailToList(maxToCount, index, startID).Take(count).ToList();
             result.Count += to.Count;
+            //Console.WriteLine(System.Threading.Thread.CurrentThread.Name +":"+ string.Join(",", to.Select(a => a.ID).ToArray()) + ";Max:"+ maxToCount +";Index:"+index);
             return string.Join(";", to.Select(a => a.Mail).ToArray());
-            //return "sms2581@hanmail.net";
         }
     }
 }

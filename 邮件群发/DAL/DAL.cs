@@ -33,11 +33,18 @@ namespace 邮件群发
             return DB.Context.Insert(data);
         }
 
-        public List<MailTo> GetMailToList(int pageSize, int pageIndex)
+        public List<MailTo> GetMailToList(int pageSize, int pageIndex, int startId)
         {
             return DB.Context.From<MailTo>()
+                .Where(a => a.ID >= startId)
                 .Page(pageSize, pageIndex)
                 .ToList();
+        }
+
+        public MailTo GetMail(string mail)
+        {
+            return DB.Context.From<MailTo>()
+                .Where(a => a.Mail == mail).ToFirst();
         }
 
         public int MailToCount()

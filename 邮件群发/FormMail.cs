@@ -109,7 +109,8 @@ namespace 邮件群发
 
                         if (string.IsNullOrEmpty(msg))
                         {
-                            dataList.Add(new MailTo { Mail = mail });
+                            if(!dataList.Any(a => a.Mail == mail) && dal.GetMail(mail) == null)
+                                dataList.Add(new MailTo { Mail = mail });
 
                             if (dataList.Count == 500)
                             {
@@ -157,14 +158,17 @@ namespace 邮件群发
             var fromcount = from.Count;
 
             List<SendData> data = new List<SendData>();
+            int startid = 1;
             from.ForEach(a => {
                 var count = GetAvg(tocount, fromcount);
-                data.Add(new SendData { 
+                data.Add(new SendData {
+                    StartID = startid,
                     From = a, 
                     ToCount = count, 
                     SendMail = a.Mail, 
                     Press = string.Format("{0}/{1}", 0, count) });
                 tocount = tocount - count;
+                startid += count;
                 fromcount = fromcount - 1;
             });
             
@@ -207,7 +211,7 @@ namespace 邮件群发
 
         void mail_SendResult(object sender, SendResultEventArgs e)
         {
-            if (e.Message == "完成")
+            if (e.Message == "全部发送完成")
             {
                 thm.CallBackThread();                
             }
@@ -230,7 +234,7 @@ namespace 邮件群发
                 row.Cells[colPress.Name].Value = string.Format("{0}/{1}", e.Count, row.Cells[colToCount.Name].Value);
                 row.Cells[colMessage.Name].Value = string.Format("{0}{1}{2}", row.Cells[colMessage.Name].Value, Environment.NewLine, e.Message);
 
-                if (e.Message == "完成" && thm.num == 0)
+                if (e.Message == "全部发送完成" && thm.num == 0)
                 {
                     btnSend.Enabled = true;
                     btnSend.Text = "发送邮件";
@@ -262,6 +266,7 @@ namespace 邮件群发
 
     public class SendData
     {
+        public int StartID { get; set; }
         public string SendMail { get; set; }
         public int ToCount { get; set; }
         public MailFrom From { get; set; }
@@ -307,7 +312,7 @@ namespace 邮件群发
             data.ForEach(item => {
                 if (thList.Count < maxNum)
                 {
-                    MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount, imgPath);
+                    MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount, imgPath, item.StartID);
                     mail.SendResult += mail_SendResult;
                     Thread th = new Thread(mail.Send);
                     th.Name = item.SendMail;
@@ -345,7 +350,7 @@ namespace 邮件群发
                         if (SendQueue.Count > 0)
                         {
                             var item = SendQueue.Dequeue();
-                            MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount, imgPath);
+                            MailObject mail = new MailObject(item.From.Server, item.From.Port.Value, item.From.UserName, item.From.PassWord, subject, item.SendMail, tocount, item.ToCount, imgPath, item.StartID);
                             mail.SendResult += mail_SendResult;
                             Thread thh = new Thread(mail.Send);
                             AddThread(thh);
