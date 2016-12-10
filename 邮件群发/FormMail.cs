@@ -23,6 +23,9 @@ namespace 邮件群发
         public FormMail()
         {
             InitializeComponent();
+
+            dataGridView1.DataSource = new List<SendData>();
+
             GetSendList();
         }
 
@@ -156,17 +159,31 @@ namespace 邮件群发
             var from = dal.GetMailFromList();
             var tocount = dal.MailToCount();
             var fromcount = from.Count;
+            int index = 0;
+
+            var source = (List<SendData>)dataGridView1.DataSource;            
 
             List<SendData> data = new List<SendData>();
             int startid = 1;
             from.ForEach(a => {
                 var count = GetAvg(tocount, fromcount);
+
+                if(source != null)
+                {
+                    var sendmail = source.Where(s => s.SendMail == a.Mail).FirstOrDefault();
+                    if(sendmail != null)
+                    {
+                        index = sendmail.Press.Split('/')[0].ToInt32(0);
+                    }
+                }
+
                 data.Add(new SendData {
                     StartID = startid,
                     From = a, 
                     ToCount = count, 
-                    SendMail = a.Mail, 
-                    Press = string.Format("{0}/{1}", 0, count) });
+                    SendMail = a.Mail,
+                    Press = string.Format("{0}/{1}", (index > count ? count : index) , count)
+                });
                 tocount = tocount - count;
                 startid += count;
                 fromcount = fromcount - 1;
@@ -260,6 +277,7 @@ namespace 邮件群发
         private void button1_Click(object sender, EventArgs e)
         {
             dal.DelMailToAll();
+            dal.DelHistory();
             GetSendList();
         }
     }

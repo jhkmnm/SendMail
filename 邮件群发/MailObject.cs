@@ -79,16 +79,19 @@ namespace 邮件群发
 
         public void Send()
         {
-            string to = GetRecipientAddresses();
+            string[] to = GetRecipientAddresses();
 
-            while(!string.IsNullOrEmpty(to))
+            while(!string.IsNullOrEmpty(to[0]))
             {
-                mail.To = to;
+                mail.To = to[1];
 
                 try
                 {
-                    Init();
-                    client.Send(mail);
+                    if (!string.IsNullOrEmpty(to[1]))
+                    {
+                        Init();
+                        client.Send(mail);
+                    }
                     result.Succeed = true;
                     result.Message = string.Format("{2}:第{0}组发送成功{1}", index, Environment.NewLine, DateTime.Now.ToString());
                 }
@@ -102,7 +105,7 @@ namespace 邮件群发
                     client.Disconnect();
                     index++;
                     OnSend(result);
-                    to = "";
+                    to[0] = "";
                     if(maxSendCount - result.Count > 0)
                         to = GetRecipientAddresses();
                 }
@@ -125,14 +128,24 @@ namespace 邮件群发
         /// 获取收件人地址
         /// </summary>
         /// <returns></returns>
-        public string GetRecipientAddresses()
+        public string[] GetRecipientAddresses()
         {
             var count = (maxSendCount - index * maxToCount) > 0 ? maxToCount : (maxSendCount - (index - 1) * maxToCount);
 
             var to = dal.GetMailToList(maxToCount, index, startID).Take(count).ToList();
             result.Count += to.Count;
-            //Console.WriteLine(System.Threading.Thread.CurrentThread.Name +":"+ string.Join(",", to.Select(a => a.ID).ToArray()) + ";Max:"+ maxToCount +";Index:"+index);
-            return string.Join(";", to.Select(a => a.Mail).ToArray());
+            Console.WriteLine(System.Threading.Thread.CurrentThread.Name + ":" + string.Join(",", to.Select(a => a.ID).ToArray()) + ";Max:" + maxToCount + ";Index:" + index);
+
+            //检查并记录已发送的邮箱
+            List<MailTo> send = new List<MailTo>();
+            to.ForEach(item => {
+                if (dal.ExistsHistory(item.Mail))
+                {
+                    send.Add(item);
+                }
+            });
+
+            return new string[] { string.Join(";", to.Select(a => a.Mail).ToArray()), string.Join(";", send.Select(a => a.Mail).ToArray()) };
         }
     }
 }

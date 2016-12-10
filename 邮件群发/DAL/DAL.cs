@@ -7,18 +7,37 @@ namespace 邮件群发
 {
     public class DAL
     {
-        #region 服务器
-        public int AddServer(Server data)
+        static object obj = new object();
+
+        #region 发送记录
+        public bool ExistsHistory(string mail)
         {
-            if (data.ID == 0)
-                return DB.Context.Insert<Server>(data);
-            else
-                return DB.Context.Update(data);
+            lock (obj)
+            {
+                if (GetHistory(mail) == null)
+                {
+                    AddSendHistory(new SendHistory { Mail = mail });
+                    return true;
+                }
+                return false;
+            }
         }
 
-        public List<Server> GetServers()
+        public int AddSendHistory(SendHistory data)
         {
-            return DB.Context.From<Server>().ToList();
+            return DB.Context.Insert<SendHistory>(data);
+        }
+
+        public SendHistory GetHistory(string mail)
+        {
+            return DB.Context.From<SendHistory>()
+                .Where(a => a.Mail == mail)
+                .ToFirst();
+        }
+
+        public int DelHistory()
+        {
+            return DB.Context.DeleteAll<SendHistory>();
         }
         #endregion
 
